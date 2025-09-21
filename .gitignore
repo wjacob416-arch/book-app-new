@@ -1,0 +1,15 @@
+# Python/Flask
+__pycache__/
+*.pyc
+instance/
+.env
+*.db
+
+# Node/React
+node_modules/
+build/
+.env.local
+
+# System files
+.DS_Store
+Thumbs.db
