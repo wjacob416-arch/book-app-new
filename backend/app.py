@@ -25,9 +25,9 @@ def add_book():
     new_book = request.get_json()  # get JSON data from request
     books.append(new_book) # add it to the list
     return jsonify(new_book), 201  # return what was added
-@app.route("\books/<int:book_id>",methods =["DELETE"])
-def delete_book(book_id):
-    for book in books:
+@app.route("/books/<int:book_id>", methods=["DELETE"])
+def delete_book(book_id): # designed to go and delete a book in the list
+    for book in books:  # go through each book in books
         if book["id"] == book_id:
            books.remove(book)
            return jsonify(book), 200
