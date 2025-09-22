@@ -20,7 +20,12 @@ def get_authors():
     for book in books:          # go through each book
         authors.append(book["author"])  # add the author to the list
     return jsonify(authors)
-
+@app.route("/books", methods=["POST"])
+def add_book():
+    new_book = request.get_json()
+    books.append(new_book)
+    return jsonify(new_book), 201
+        
 
 if __name__ == "__main__":
     app.run(debug=True)
