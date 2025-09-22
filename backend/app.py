@@ -1,6 +1,8 @@
 from flask import Flask, request,jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 books = [
     {"id": 1, "title": "1984", "author": "George Orwell", "genre": "fiction"},
@@ -36,9 +38,9 @@ def delete_book(book_id): # designed to go and delete a book in the list
 def update_book(book_id):
     data = request.get_json()
     new_title = data["title"]
-    for book in books:
-        if book["id"] == book_id:
-            book["title"] =  new_title
+    for book in books: # loop through the books dictionary
+        if book["id"] == book_id: # look for id and if matches
+            book["title"] =  new_title # update the title
             return jsonify(book),200
     
         
