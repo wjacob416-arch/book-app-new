@@ -22,9 +22,16 @@ def get_authors():
     return jsonify(authors)
 @app.route("/books", methods=["POST"])
 def add_book():
-    new_book = request.get_json()
-    books.append(new_book)
-    return jsonify(new_book), 201
+    new_book = request.get_json()  # get JSON data from request
+    books.append(new_book) # add it to the list
+    return jsonify(new_book), 201  # return what was added
+@app.route("\books/<int:book_id>",methods =["DELETE"])
+def delete_book(book_id):
+    for book in books:
+        if book["id"] == book_id:
+           books.remove(book)
+           return jsonify(book), 200
+    return jsonify({"error": "Book not found"}), 404
         
 
 if __name__ == "__main__":

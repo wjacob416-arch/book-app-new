@@ -1,1 +1,0 @@
-This is a folder dedicated for frontend work
