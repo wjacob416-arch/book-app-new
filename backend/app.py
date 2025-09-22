@@ -32,6 +32,15 @@ def delete_book(book_id): # designed to go and delete a book in the list
            books.remove(book)
            return jsonify(book), 200
     return jsonify({"error": "Book not found"}), 404
+@app.route("/books/<int:book_id>", methods=["PUT"])
+def update_book(book_id):
+    data = request.get_json()
+    new_title = data["title"]
+    for book in books:
+        if book["id"] == book_id:
+            book["title"] =  new_title
+            return jsonify(book),200
+    
         
 
 if __name__ == "__main__":
