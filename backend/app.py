@@ -1,13 +1,16 @@
 from flask import Flask, request,jsonify
 from flask_cors import CORS
+import sqlite3
 
 app = Flask(__name__)
 CORS(app)
 
-books = [
-    {"id": 1, "title": "1984", "author": "George Orwell", "genre": "fiction"},
-    {"id": 2, "title": "The Hobbit", "author": "J.R.R. Tolkien", "genre": "fiction"}
-]
+# books = [
+#     {"id": 1, "title": "1984", "author": "George Orwell", "genre": "fiction"},
+#     {"id": 2, "title": "The Hobbit", "author": "J.R.R. Tolkien", "genre": "fiction"}
+# ]
+books = sqlite3.connect('books.db', check_same_thread=False)
+cursor = books.cursor()
 
 @app.route("/")
 def home():
