@@ -8,19 +8,28 @@ function HomePage(){
       .then((response) => response.json())
       .then((books) => setBooks(books));
   }, []);
-   return (
-    <div>
-      <h1>All Books</h1>
-      <Link to="/add">Add a Book</Link>
-      <ul>
-        {books.map((book) => (
-          <li key={book.id}>
-            {book.title} by {book.author}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  function handleDelete(book_id) {
+  fetch(`http://127.0.0.1:5000/books/${book_id}`, {
+    method: "DELETE",
+  })
+  .then(() => {
+    setBooks(books.filter((book) => book.id !== book_id));
+  });
+}
+  return (
+  <div>
+    <h1>All Books</h1>
+    <Link to="/add">Add a Book</Link>
+    <ul>
+      {books.map((book) => (
+        <li key={book.id}>
+          {book.title} by {book.author}
+          <button onClick={() => handleDelete(book.id)}>Delete</button>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 }
 function AddBookPage() {
   const [title, setTitle] = useState("");
