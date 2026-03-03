@@ -28,8 +28,8 @@ def add_books():
     try:
         # "OR IGNORE" prevents the crash if the ISBN is a duplicate
         conn.execute(
-            "INSERT OR IGNORE INTO books (title, author, published_date, isbn) VALUES (?, ?, ?, ?)",
-            (data.get("title"), data.get("author"), data.get("published_date"), data.get("isbn"))
+            "INSERT INTO books (title, author, published_date, isbn) VALUES (?, ?, ?, ?)",
+            (data.get("title"), data.get("author"), data.get("published_date"), data.get("isbn") or None)
         )
         conn.commit()
     except Exception as e:
@@ -38,7 +38,17 @@ def add_books():
     finally:
         conn.close()
     return jsonify({"status": "success"}), 201
-
+@app.route("/books/<int:id>", methods=["DELETE"])
+def delete_book(id):
+    conn = get_db()
+    book = conn.execute("SELECT * FROM books WHERE id = ?", (id,)).fetchone()
+    if not book:
+        conn.close()
+        return jsonify({"error": "Book not found"}), 404
+    conn.execute("DELETE FROM books WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "deleted"}), 200
 # Add your other routes (DELETE/PUT) below here as needed
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
