@@ -6,13 +6,14 @@ function SearchBar({ setTitle, setAuthor, setIsbn, setPublishedDate }) {
   const [results, setResults] = useState([]);
 
   function handleSearch() {
-    // I FIXED THE URL: Added /search.json?q= and the missing $ sign
+    
     fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5
 `)
       .then((res) => res.json())
       .then((data) => setResults(data.docs || []))
       .catch((err) => console.error("Search failed:", err));
   }
+   
 
   return (
     <div className="search-box">
@@ -41,7 +42,6 @@ function SearchBar({ setTitle, setAuthor, setIsbn, setPublishedDate }) {
 function ManualEntryForm({ onRefresh, title, setTitle, author, setAuthor, isbn, setIsbn, publishedDate, setPublishedDate }) {
   function handleSubmit() {
     if (!title || !author) return;
-    // I FIXED THE BACKEND URL: Added :5000/books
     fetch("http://127.0.0.1:5000/books", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,7 +77,10 @@ function App() {
       .then((data) => setBooks(data))
       .catch((err) => console.error("Flask is likely not running."));
   };
-
+    function handleDelete(book_id) {
+  fetch(`http://127.0.0.1:5000/books/${book_id}`, { method: "DELETE" })
+    .then(() => fetchbooks()); // re-fetches from DB instead of filtering locally
+}
   useEffect(() => { fetchbooks(); }, []);
 
   return (
@@ -102,7 +105,14 @@ function App() {
         </div>
         <div className="collection-section">
           <h2>Your Collection</h2>
-          <ul>{books.map((b) => <li key={b.id}><strong>{b.title}</strong> by {b.author}</li>)}</ul>
+          <ul>
+            {books.map((b) => (
+              <li key={b.id}>
+                <strong>{b.title}</strong> by {b.author}
+                <button className="delete-btn" onClick={() => handleDelete(b.id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
