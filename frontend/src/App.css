@@ -71,3 +71,37 @@ input {
   cursor: pointer;
   font-size: 1rem;
 }
+
+
+.addBook-Btn{
+  background:blue;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* 1. THIS MAKES IT AN HBOX (SIDE-BY-SIDE) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr; /* Left is 350px, Right takes the rest */
+  gap: 30px;
+  padding: 20px;
+  align-items: start;
+}
+
+/* 2. THIS MAKES THE LEFT SIDE A VBOX (STACKED) */
+.manual-entry-box {
+  display: flex;
+  flex-direction: column;
+  background: #2c3e50; /* Dark background so white text works */
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  gap: 10px;
+}
+
+/* 3. THIS STYLING IS FOR THE RIGHT SIDE STACK */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
