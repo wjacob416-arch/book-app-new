@@ -4,7 +4,7 @@ import sqlite3
 
 app = Flask(__name__)
 # Allow your React app to talk to this backend
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app)
 
 def get_db():
     conn = sqlite3.connect('books.db')

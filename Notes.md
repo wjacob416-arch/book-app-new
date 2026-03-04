@@ -1,44 +1,101 @@
-# Book Tracker App - Progress Notes
-## Sunday 9/21/25
-## Backend (Flask)
-- Created `app.py` with Flask app.
-- Routes so far:
-  - `/` → "Hello, Book Tracker!"
-  - `/books` (GET) → returns list of books
-  - `/authors` (GET) → returns list of authors
-  - `/books` (POST) → add a new book
-  - `/books/<id>` (DELETE) → delete a book by id
+# 📚 Book Tracker App
 
-## Next Steps
-- Add **update route** (`PUT /books/<id>`) to modify book info.
-- Later: connect backend to a database (SQLite).
-- After backend basics: connect frontend (React) to display books.
+A full-stack web application for managing a personal book collection. Search real books using the Open Library API and add them to your collection with a single click.
 
-## Reminder
-- Use forward slash `/` not backslash `\` in route paths.
-- `books.remove(book)` removes the book dictionary from the list.
-- Can test routes with curl in PowerShell, but okay to skip for now.
+---
 
-Monday 9/22
-## Backend (Flask)
-- Built `app.py` with Flask routes:
-  - `/` → "Hello, Book Tracker!"
-  - `/books` (GET) → returns all books
-  - `/authors` (GET) → returns list of authors
-  - `/books` (POST) → add a new book
-  - `/books/<id>` (DELETE) → delete a book by id
-  - `/books/<id>` (PUT) → update a book by id
-- Added **CORS(app)** to allow frontend (React) to call backend.
+## Tech Stack
 
-## Frontend (React)
-- Cleaned starter code → only shows `Book Tracker App`.
-- Added fetch to `/books` on page load:
-  - Uses `useEffect` to call backend.
-  - Stores result in `books` state with `useState`.
-  - Displays list: `"Title by Author"`.
+**Frontend:** React, CSS  
+**Backend:** Python, Flask  
+**Database:** SQLite  
+**External API:** [Open Library Search API](https://openlibrary.org/dev/docs/api)
 
-  ## Next Steps
-- Add a form in React to **POST new books** to the backend.
-- Add delete buttons in React to call **DELETE /books/<id>**.
-- Add update feature in React to call **PUT /books/<id>**.
+---
 
+## Features
+
+- Search books by title using the Open Library API
+- Click any search result to auto-fill the form
+- Manually add books by title, author, ISBN, and genre/date
+- View your full collection
+- Delete books from your collection
+
+---
+
+## Project Structure
+```
+book-app/
+├── backend/
+│   └── app.py          # Flask REST API
+├── frontend/
+│   └── src/
+│       ├── App.jsx     # Main React component
+│       └── App.css     # Styles
+└── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+- Python 3.x
+- Node.js & npm
+
+### Backend Setup
+```bash
+cd backend
+pip install flask flask-cors
+python app.py
+```
+Flask runs on `http://127.0.0.1:5000`
+
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm start
+```
+React runs on `http://localhost:3000`
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/books` | Retrieve all books |
+| POST | `/books` | Add a new book |
+| DELETE | `/books/<id>` | Delete a book by ID |
+
+### Example POST body
+```json
+{
+  "title": "Moby Dick",
+  "author": "Herman Melville",
+  "isbn": "9780142437247",
+  "published_date": "1851"
+}
+```
+## Database Schema
+```sql
+CREATE TABLE IF NOT EXISTS books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    published_date DATE,
+    isbn TEXT UNIQUE
+);
+```
+---
+
+## Notes
+
+- Duplicate ISBNs are handled gracefully and won't crash the server
+- CORS is enabled so React can communicate with Flask
+- The SQLite database (`books.db`) is created automatically on first run
+
+---
+
+## Author
+
+Jacob Williams — [GitHub](https://github.com/wjacob416-arch)
