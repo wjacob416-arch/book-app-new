@@ -3,52 +3,37 @@ import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-do
 import './App.css';
 
 function AddBookPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [isbn, setIsbn] = useState("");
+  const [publishedDate, setPublishedDate] = useState("");
   const navigate = useNavigate();
-
-  function handleSearch() {
-    fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`)
-      .then((response) => response.json())
-      .then((data) => setResults(data.docs || []));
-  }
-
-  function handleSelect(book) {
-    const bookData = {
-      title: book.title || "Unknown Title",
-      author: book.author_name?.[0] || "Unknown Author",
-      isbn: book.isbn?.[0] || "",
-      published_date: book.first_publish_year?.toString() || ""
-    };
-
-    fetch("http://127.0.0.1:5000/books", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookData)
-    })
-    .then((res) => {
-      if (res.ok) navigate("/");
-      else alert("This book might already be in your list.");
-    })
-    .catch((err) => console.error("Connection error:", err));
-  }
-
+  
+  function handleSubmit() {
+  fetch("http://127.0.0.1:5000/books", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, author, isbn, published_date: publishedDate })
+  })
+  .then(() => navigate("/"));
+}
   return (
-    <div className="container">
+    <div>
       <h1>Add a Book</h1>
       <Link to="/">Back to Home</Link>
       <br /><br />
-      <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search..." />
-      <button className="submit-btn" onClick={handleSearch}>Search</button>
-      <ul>
-        {results.map((book, i) => (
-          <li key={i} onClick={() => handleSelect(book)} style={{ cursor: "pointer" }}>
-            {book.title} by {book.author_name?.[0]}
-          </li>
-        ))}
-      </ul>
+      <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <br />
+      <input placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
+      <br />
+      <input placeholder="ISBN" value={isbn} onChange={(e) => setIsbn(e.target.value)} />
+      <br />
+      <input placeholder="Published Date" value={publishedDate} onChange={(e) => setPublishedDate(e.target.value)} />
+      <br /><br />
+      <button onClick={handleSubmit}>Submit</button>
     </div>
   );
+  
 }
 
 function HomePage() {
@@ -82,6 +67,7 @@ function HomePage() {
     </div>
   );
 }
+
 
 function App() {
   return (
