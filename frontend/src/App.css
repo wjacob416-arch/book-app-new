@@ -75,6 +75,9 @@ input {
 
 .addBook-Btn{
   background:blue;
+  color:white;
+  font-weight: bold;
+  width: 100%;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;

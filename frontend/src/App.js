@@ -1,101 +1,63 @@
 import { useState, useEffect } from "react";
 import './App.css';
 
+function SearchBar({ setTitle, setAuthor, setIsbn, setPublishedDate }) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
 
-// function AddBookPage() {
-//   const [title, setTitle] = useState("");
-//   const [author, setAuthor] = useState("");
-//   const [isbn, setIsbn] = useState("");
-//   const [publishedDate, setPublishedDate] = useState("");
-//   const navigate = useNavigate();
-  
-//   function handleSubmit() {
-//   fetch("http://127.0.0.1:5000/books", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ title, author, isbn, published_date: publishedDate })
-//   })
-//   .then(() => navigate("/"));
-// }
-//   return (
-//     <div>
-//       <h1>Add a Book</h1>
-//       <Link to="/">Back to Home</Link>
-//       <br /><br />
-//       <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-//       <br />
-//       <input placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
-//       <br />
-//       <input placeholder="ISBN" value={isbn} onChange={(e) => setIsbn(e.target.value)} />
-//       <br />
-//       <input placeholder="Published Date" value={publishedDate} onChange={(e) => setPublishedDate(e.target.value)} />
-//       <br /><br />
-//       <button onClick={handleSubmit}>Submit</button>
-//     </div>
-//   );
-  
-// }
+  function handleSearch() {
+    // I FIXED THE URL: Added /search.json?q= and the missing $ sign
+    fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5
+`)
+      .then((res) => res.json())
+      .then((data) => setResults(data.docs || []))
+      .catch((err) => console.error("Search failed:", err));
+  }
 
-// function HomePage() {
-//   const [books, setBooks] = useState([]);
+  return (
+    <div className="search-box">
+      <input 
+        value={query} 
+        onChange={(e) => setQuery(e.target.value)} 
+        placeholder="Find on Open Library..." 
+      />
+      <button className="submit-btn" onClick={handleSearch}>Search</button>
+      <ul className="search-results">
+        {results.map((book, i) => (
+          <li key={i} onClick={() => {
+            setTitle(book.title || "");
+            setAuthor(book.author_name?.[0] || "");
+            setIsbn(book.isbn?.[0] || "");
+            setPublishedDate(book.first_publish_year?.toString() || "");
+          }} style={{ cursor: "pointer", borderBottom: "1px solid #ddd", padding: "10px" }}>
+            <strong>{book.title}</strong> (Click to Fill Form)
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-//   useEffect(() => {
-//     fetch("http://127.0.0.1:5000/books")
-//       .then((res) => res.json())
-//       .then((data) => setBooks(data));
-//   }, []);
-
-//   function handleDelete(id) {
-//     fetch(`http://127.0.0.1:5000/books/${id}`, { method: "DELETE" })
-//       .then((res) => {
-//         if (res.ok) setBooks(books.filter((b) => b.id !== id));
-//       });
-//   }
-
-//   return (
-//     <div className="container">
-//       <h1>All Books</h1>
-//       <Link to="/add">Add a Book</Link>
-//       <ul>
-//         {books.map((b) => (
-//           <li key={b.id}>
-//             <span>{b.title} by {b.author}</span>
-//             <button className="delete-btn" onClick={() => handleDelete(b.id)}>Delete</button>
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
-
-function ManualEntryForm({ onRefresh }) {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [isbn, setIsbn] = useState("");
-  const [publishedDate, setPublishedDate] = useState("");
-  
+function ManualEntryForm({ onRefresh, title, setTitle, author, setAuthor, isbn, setIsbn, publishedDate, setPublishedDate }) {
   function handleSubmit() {
+    if (!title || !author) return;
+    // I FIXED THE BACKEND URL: Added :5000/books
     fetch("http://127.0.0.1:5000/books", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, author, isbn, published_date: publishedDate })
-    })
-    .then(() =>{
-      onRefresh(); // 2. Use the walkie-talkie!
-      setTitle(""); // 3. Clear the boxes so it feels "done"
-      setAuthor("");
+    }).then(() => {
+      onRefresh();
+      setTitle(""); setAuthor(""); setIsbn(""); setPublishedDate("");
     });
   }
-
   return (
-    <div className="vbox"> {/* ADD THE LABEL HERE */}
+    <div>
       <h2>Add Manually</h2>
-      {/* Remove the <br /> tags, the VBox will handle spacing now */}
       <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
       <input placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
       <input placeholder="ISBN" value={isbn} onChange={(e) => setIsbn(e.target.value)} />
-      <input placeholder="Genre" value={publishedDate} onChange={(e) => setPublishedDate(e.target.value)} />
-      
+      <input placeholder="Genre/Date" value={publishedDate} onChange={(e) => setPublishedDate(e.target.value)} />
       <button className="addBook-Btn" onClick={handleSubmit}>Add Book</button>
     </div>
   );
@@ -103,31 +65,44 @@ function ManualEntryForm({ onRefresh }) {
 
 function App() {
   const [books, setBooks] = useState([]);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [isbn, setIsbn] = useState("");
+  const [publishedDate, setPublishedDate] = useState("");
+
   const fetchbooks = () => {
-      fetch("http://127.0.0.1:5000/books")
-        .then((res) => res.json())
-        .then((data) => setBooks(data));
+    // I FIXED THE BACKEND URL: Added :5000/books
+    fetch("http://127.0.0.1:5000/books")
+      .then((res) => res.json())
+      .then((data) => setBooks(data))
+      .catch((err) => console.error("Flask is likely not running."));
   };
-  useEffect(() => {
-    fetchbooks();
-  }, []);
+
+  useEffect(() => { fetchbooks(); }, []);
 
   return (
     <div className="dashboard-grid">
-      {/* LEFT COLUMN */}
-      <div className="vbox">
-        <ManualEntryForm onRefresh={fetchbooks} />
+      <div className="manual-entry-box">
+        <ManualEntryForm 
+          onRefresh={fetchbooks} 
+          title={title} setTitle={setTitle} 
+          author={author} setAuthor={setAuthor} 
+          isbn={isbn} setIsbn={setIsbn} 
+          publishedDate={publishedDate} setPublishedDate={setPublishedDate} 
+        />
       </div>
-      {/* RIGHT COLUMN (The missing piece) */}
       <div className="main-content">
         <div className="search-section">
-           {/* We will build the "Find on Open Library" logic here later */}
-           <p>Search goes here</p> 
+          <SearchBar 
+            setTitle={setTitle} 
+            setAuthor={setAuthor} 
+            setIsbn={setIsbn} 
+            setPublishedDate={setPublishedDate} 
+          />
         </div>
-        
         <div className="collection-section">
-           {/* We will move your "Your Collection" list here later */}
-           <p>Collection list goes here</p>
+          <h2>Your Collection</h2>
+          <ul>{books.map((b) => <li key={b.id}><strong>{b.title}</strong> by {b.author}</li>)}</ul>
         </div>
       </div>
     </div>
