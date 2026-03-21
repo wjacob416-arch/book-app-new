@@ -11,6 +11,22 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+def init_db():
+    conn = get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS books (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            published_date DATE,
+            isbn TEXT UNIQUE
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
 @app.route("/books", methods=["GET"])
 def get_books():
     conn = get_db()
